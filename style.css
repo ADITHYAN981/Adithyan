@@ -552,14 +552,65 @@ body {
   outline: none;
   position: relative;
   overflow: hidden;
+  will-change: transform, box-shadow;
 }
 
 .key:hover {
   transform: translateY(-2px);
+  filter: brightness(1.08);
 }
 
 .key:active, .key.pressed {
-  transform: translateY(1px) scale(0.96);
+  transform: translateY(2px) scale(0.93) !important;
+  filter: brightness(1.22);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.7), inset 0 0 12px rgba(255, 255, 255, 0.4) !important;
+  border-color: rgba(96, 165, 250, 0.8) !important;
+  transition: transform 0.06s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.06s ease,
+              border-color 0.06s ease !important;
+}
+
+/* Expanding touch/click shockwave ripple */
+.ripple-wave {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.85) 0%, rgba(96, 165, 250, 0.65) 45%, rgba(37, 99, 235, 0) 75%);
+  transform: translate(-50%, -50%) scale(0);
+  animation: ripplePop 0.45s cubic-bezier(0.12, 0.8, 0.32, 1) forwards;
+  z-index: 10;
+}
+
+@keyframes ripplePop {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  60% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3.5);
+    opacity: 0;
+  }
+}
+
+/* Display kinetic bounce animation when typing */
+.result-value.digit-pop {
+  animation: numPop 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes numPop {
+  0% { transform: scale(0.96); }
+  50% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+/* Screen border glow pulse on keypress */
+.display-panel.screen-flash {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) inset, 0 0 20px rgba(59, 130, 246, 0.38) !important;
+  border-color: rgba(59, 130, 246, 0.5) !important;
+  transition: border-color 0.12s, box-shadow 0.12s;
 }
 
 /* Button Classes */

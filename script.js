@@ -66,48 +66,106 @@ class XenoCalculator {
       if (!this.audioCtx) return;
 
       const now = this.audioCtx.currentTime;
-      const osc = this.audioCtx.createOscillator();
-      const gain = this.audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(this.audioCtx.destination);
 
       if (type === 'click') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(440, now);
-        osc.frequency.exponentialRampToValueAtTime(220, now + 0.04);
-        gain.gain.setValueAtTime(0.08, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-        osc.start(now);
-        osc.stop(now + 0.04);
+        // Dual-transient crisp mechanical switch click
+        const osc1 = this.audioCtx.createOscillator();
+        const gain1 = this.audioCtx.createGain();
+        osc1.connect(gain1);
+        gain1.connect(this.audioCtx.destination);
+        osc1.type = 'triangle';
+        osc1.frequency.setValueAtTime(680, now);
+        osc1.frequency.exponentialRampToValueAtTime(140, now + 0.035);
+        gain1.gain.setValueAtTime(0.32, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+        osc1.start(now);
+        osc1.stop(now + 0.035);
+
+        // High snap transient
+        const osc2 = this.audioCtx.createOscillator();
+        const gain2 = this.audioCtx.createGain();
+        osc2.connect(gain2);
+        gain2.connect(this.audioCtx.destination);
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(1800, now);
+        osc2.frequency.exponentialRampToValueAtTime(600, now + 0.015);
+        gain2.gain.setValueAtTime(0.18, now);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
+        osc2.start(now);
+        osc2.stop(now + 0.015);
+
       } else if (type === 'operator') {
+        // Melodic resonant operator tone
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(this.audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(620, now);
+        osc.frequency.exponentialRampToValueAtTime(440, now + 0.07);
+        gain.gain.setValueAtTime(0.30, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+        osc.start(now);
+        osc.stop(now + 0.07);
+
+      } else if (type === 'func') {
+        // High futuristic chime for scientific functions
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(this.audioCtx.destination);
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(520, now);
-        gain.gain.setValueAtTime(0.09, now);
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.exponentialRampToValueAtTime(660, now + 0.06);
+        gain.gain.setValueAtTime(0.28, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
         osc.start(now);
         osc.stop(now + 0.06);
+
+      } else if (type === 'clear') {
+        // Smooth downward reset swoop
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(this.audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(580, now);
+        osc.frequency.exponentialRampToValueAtTime(120, now + 0.09);
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+        osc.start(now);
+        osc.stop(now + 0.09);
+
       } else if (type === 'success') {
-        // Multi-tone chord for calculate
-        [523.25, 659.25, 783.99].forEach((freq, idx) => {
+        // Harmonic 4-tone triumphant calculation chord with reverb tail
+        const chordFrequencies = [523.25, 659.25, 783.99, 1046.5];
+        chordFrequencies.forEach((freq, idx) => {
           const chordOsc = this.audioCtx.createOscillator();
           const chordGain = this.audioCtx.createGain();
           chordOsc.connect(chordGain);
           chordGain.connect(this.audioCtx.destination);
-          chordOsc.type = 'sine';
-          chordOsc.frequency.setValueAtTime(freq, now + idx * 0.02);
-          chordGain.gain.setValueAtTime(0.05, now + idx * 0.02);
-          chordGain.gain.exponentialRampToValueAtTime(0.001, now + 0.16 + idx * 0.02);
-          chordOsc.start(now + idx * 0.02);
-          chordOsc.stop(now + 0.18 + idx * 0.02);
+          chordOsc.type = 'triangle';
+          const startTime = now + idx * 0.025;
+          chordOsc.frequency.setValueAtTime(freq, startTime);
+          chordGain.gain.setValueAtTime(0.18, startTime);
+          chordGain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.22);
+          chordOsc.start(startTime);
+          chordOsc.stop(startTime + 0.24);
         });
+
       } else if (type === 'error') {
+        // Low buzzy error thud
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(this.audioCtx.destination);
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(180, now);
-        osc.frequency.linearRampToValueAtTime(120, now + 0.12);
-        gain.gain.setValueAtTime(0.1, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        osc.frequency.setValueAtTime(160, now);
+        osc.frequency.linearRampToValueAtTime(90, now + 0.15);
+        gain.gain.setValueAtTime(0.32, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
         osc.start(now);
-        osc.stop(now + 0.12);
+        osc.stop(now + 0.15);
       }
     } catch {
       // Audio errors fail silently
@@ -609,16 +667,66 @@ class XenoCalculator {
   // ==========================================
   // Event Listeners & Keyboard Wiring
   // ==========================================
+  triggerKeyAnimation(btn, e) {
+    if (!btn) return;
+
+    // Visual press class
+    btn.classList.add('pressed');
+    setTimeout(() => btn.classList.remove('pressed'), 140);
+
+    // Create dynamic shockwave ripple from click coordinates
+    const rect = btn.getBoundingClientRect();
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple-wave';
+
+    let x, y;
+    if (e && e.clientX !== undefined && e.clientX !== 0) {
+      x = e.clientX - rect.left;
+      y = e.clientY - rect.top;
+    } else {
+      x = rect.width / 2;
+      y = rect.height / 2;
+    }
+
+    const size = Math.max(rect.width, rect.height) * 1.8;
+    ripple.style.width = `${size}px`;
+    ripple.style.height = `${size}px`;
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+
+    btn.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 500);
+
+    // Display screen reactive glow flash & numeral bounce
+    const displayPanel = document.querySelector('.display-panel');
+    if (displayPanel) {
+      displayPanel.classList.add('screen-flash');
+      setTimeout(() => displayPanel.classList.remove('screen-flash'), 160);
+    }
+    if (this.resultDisplay) {
+      this.resultDisplay.classList.remove('digit-pop');
+      void this.resultDisplay.offsetWidth; // Force DOM reflow
+      this.resultDisplay.classList.add('digit-pop');
+    }
+  }
+
   initEventListeners() {
+    // Prime audio context on initial pointer interaction
+    const primeAudio = () => {
+      this.initAudio();
+      window.removeEventListener('pointerdown', primeAudio);
+      window.removeEventListener('keydown', primeAudio);
+    };
+    window.addEventListener('pointerdown', primeAudio, { passive: true });
+    window.addEventListener('keydown', primeAudio, { passive: true });
+
     // Keypad Click Delegation
     document.querySelectorAll('.key').forEach((btn) => {
       btn.addEventListener('click', (e) => {
+        this.triggerKeyAnimation(btn, e);
+
         const val = btn.getAttribute('data-val');
         const action = btn.getAttribute('data-action');
-
-        // Tactile press visual feedback
-        btn.classList.add('pressed');
-        setTimeout(() => btn.classList.remove('pressed'), 120);
 
         if (action === 'clear-all') {
           this.clearAll();
@@ -628,7 +736,10 @@ class XenoCalculator {
           this.toggleNegate();
         } else if (action === 'operator') {
           this.appendOperator(val);
-        } else if (action === 'paren' || action === 'func') {
+        } else if (action === 'paren') {
+          this.appendToken(val);
+        } else if (action === 'func') {
+          this.playSound('func');
           this.appendToken(val);
         } else if (action && action.startsWith('mem-')) {
           this.handleMemory(action);
@@ -659,13 +770,18 @@ class XenoCalculator {
     this.clearHistoryBtn.addEventListener('click', () => this.clearHistory());
 
     // Display quick actions
-    this.backspaceBtn.addEventListener('click', () => this.backspace());
+    this.backspaceBtn.addEventListener('click', (e) => {
+      this.triggerKeyAnimation(this.backspaceBtn, e);
+      this.playSound('clear');
+      this.backspace();
+    });
     this.lastAnswerChip.addEventListener('click', () => {
       this.playSound('click');
       this.appendToken('ANS');
     });
 
-    this.copyBtn.addEventListener('click', async () => {
+    this.copyBtn.addEventListener('click', async (e) => {
+      this.triggerKeyAnimation(this.copyBtn, e);
       this.playSound('click');
       const text = this.resultDisplay.textContent;
       try {
@@ -678,7 +794,6 @@ class XenoCalculator {
 
     // Keyboard Shortcuts
     window.addEventListener('keydown', (e) => {
-      // Don't capture if user is in an input outside (though there is none here)
       if (['input', 'textarea'].includes(e.target.tagName.toLowerCase())) return;
 
       const key = e.key;
@@ -715,8 +830,11 @@ class XenoCalculator {
         this.animateKeyMatch('#btn-equals');
       } else if (key === 'Backspace') {
         e.preventDefault();
+        this.playSound('clear');
         this.backspace();
+        this.animateKeyMatch('#backspace-btn');
       } else if (key === 'Escape') {
+        this.playSound('clear');
         this.clearAll();
         this.animateKeyMatch('#btn-ac');
       }
@@ -727,8 +845,7 @@ class XenoCalculator {
     try {
       const el = document.querySelector(selector);
       if (el) {
-        el.classList.add('pressed');
-        setTimeout(() => el.classList.remove('pressed'), 120);
+        this.triggerKeyAnimation(el);
       }
     } catch {}
   }
